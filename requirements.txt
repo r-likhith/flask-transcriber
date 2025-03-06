@@ -1,6 +1,7 @@
-Flask
-Flask-Cors
-whisper
-torch
-psycopg2-binary
-requests
+Flask==2.2.2
+Flask-Cors==3.0.10
+openai-whisper==20231117  # This ensures you're using the correct Whisper library (latest stable version)
+torch                    # Required for Whisper to work (it'll install the right version for your system automatically)
+psycopg2-binary==2.9.9   # For connecting directly to Supabase Postgres (in case you want raw SQL option)
+requests==2.31.0         # For downloading files from Supabase Storage
+supabase-py==0.8.2       # Supabase Python Client for inserting transcriptions
