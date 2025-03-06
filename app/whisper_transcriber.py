@@ -3,10 +3,12 @@ import requests
 import json
 import tempfile
 import os
-from supabase import create_client
-from config import DB_URL, SERVICE_ROLE_KEY
+from config import supabase
 
-supabase = create_client(DB_URL, SERVICE_ROLE_KEY)
+def format_timestamp(seconds):
+    minutes = int(seconds // 60)
+    seconds = int(seconds % 60)
+    return f"{minutes}:{seconds:02d}"
 
 def process_transcription(audio_url, meeting_id, audio_file_id):
     # Download audio file
@@ -18,11 +20,12 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
         temp_audio.write(response.content)
         temp_audio_path = temp_audio.name
 
-    # Load and run Whisper
-    model = whisper.load_model("base")
-    result = model.transcribe(temp_audio_path, language="en")
-
-    os.remove(temp_audio_path)
+    try:
+        # Load and run Whisper
+        model = whisper.load_model("base")
+        result = model.transcribe(temp_audio_path, language="en")
+    finally:
+        os.remove(temp_audio_path)
 
     # Process result into paragraphs
     paragraphs = []
@@ -45,7 +48,7 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
         paragraphs.append(current_para)
 
     transcript_text = "\n\n".join(
-        [f"[{p['start']} - {p['end']}] {p['text']}" for p in paragraphs]
+        [f"[{format_timestamp(p['start'])} - {format_timestamp(p['end'])}] {p['text']}" for p in paragraphs]
     )
     transcript_json = json.dumps(paragraphs)
 
@@ -55,7 +58,9 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
         "transcript_json": transcript_json,
         "transcript_text": transcript_text,
     }
-    supabase.table("transcriptions").insert(data).execute()
+    response = supabase.table("transcriptions").insert(data).execute()
+
+    if response.status_code != 201:  # Optional check
+        return {"error": "Failed to save transcription to database"}
 
     return {"message": "Transcription completed and saved."}
-# Whisper Processing Logic
