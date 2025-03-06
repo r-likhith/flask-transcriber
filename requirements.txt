@@ -1,8 +1,8 @@
 Flask==2.2.2
+Werkzeug==2.2.3
 Flask-Cors==3.0.10
-openai-whisper==20231117  # This ensures you're using the correct Whisper library (latest stable version)
-torch                     # Let pip decide the right version based on environment (CPU/GPU)
-psycopg2-binary==2.9.9    # For direct Postgres connection (if needed for raw SQL with Supabase Postgres)
-requests==2.31.0          # For fetching files if needed (Supabase storage downloads)
-supabase==2.0.3           # Use new supabase client instead of old supabase-py (supabase-py is deprecated)
-gunicorn                   # Needed for Render deployment (recommended to serve Flask app)
+openai-whisper==20231117
+torch
+psycopg2-binary==2.9.9
+requests==2.31.0
+supabase-py==1.0.4
