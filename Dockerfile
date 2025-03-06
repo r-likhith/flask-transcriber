@@ -13,5 +13,5 @@ RUN pip install -r requirements.txt
 # Expose port (Render will map this to its internal port)
 EXPOSE 10000
 
-# Command to run your Flask app
-CMD ["python", "main.py"]
+# Use Gunicorn to serve Flask app in production
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:10000", "main:app"]
