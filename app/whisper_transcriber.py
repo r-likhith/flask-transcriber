@@ -27,6 +27,9 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
     finally:
         os.remove(temp_audio_path)
 
+    if 'segments' not in result:
+        return {"error": "No transcription segments found"}
+
     # Process result into paragraphs
     paragraphs = []
     current_para = {"start": None, "end": None, "text": ""}
@@ -35,7 +38,7 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
     for i, segment in enumerate(result['segments']):
         start, end, text = segment['start'], segment['end'], segment['text'].strip()
 
-        if i == 0 or start - result['segments'][i-1]['end'] <= pause_threshold:
+        if i == 0 or start - result['segments'][i - 1]['end'] <= pause_threshold:
             if current_para['start'] is None:
                 current_para['start'] = start
             current_para['end'] = end
@@ -58,9 +61,10 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
         "transcript_json": transcript_json,
         "transcript_text": transcript_text,
     }
+
     response = supabase.table("transcriptions").insert(data).execute()
 
-    if response.status_code != 201:  # Optional check
-        return {"error": "Failed to save transcription to database"}
+    if response.data is None or response.error:
+        return {"error": f"Failed to save transcription: {response.error}"}
 
     return {"message": "Transcription completed and saved."}
