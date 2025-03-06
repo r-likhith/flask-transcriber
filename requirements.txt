@@ -1,0 +1,6 @@
+Flask
+Flask-Cors
+whisper
+torch
+psycopg2-binary
+requests
