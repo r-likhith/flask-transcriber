@@ -4,8 +4,10 @@ import os
 app = create_app()
 
 if __name__ == '__main__':
-    # Use PORT from environment variable if available (Render provides this), else default to 10000
+    # Use PORT from environment variable if available (for Render, Fly.io, etc.), default to 10000 for local dev
     port = int(os.getenv('PORT', 10000))
 
-    # `debug=True` can be removed for production - recommended for local development only
-    app.run(host='0.0.0.0', port=port)
+    # Important: Set debug=False by default to avoid accidental debug mode in production
+    debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+
+    app.run(host='0.0.0.0', port=port, debug=debug)
