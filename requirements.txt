@@ -7,3 +7,4 @@ requests==2.31.0
 supabase==2.0.3
 gunicorn
 Werkzeug==2.2.3  # Important pin to avoid url_quote issue
+python-dotenv  # Optional, helps load .env file automatically in local dev
