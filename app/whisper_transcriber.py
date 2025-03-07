@@ -22,7 +22,7 @@ def process_transcription(audio_url, meeting_id, audio_file_id):
 
     try:
         # Load and run Whisper
-        model = whisper.load_model("base")
+        model = whisper.load_model("tiny")
         result = model.transcribe(temp_audio_path, language="en")
     finally:
         os.remove(temp_audio_path)
